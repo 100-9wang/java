@@ -1,3 +1,5 @@
+package basic;
+
 public class TypeCasting {
     public static void main(String[] args) {
         // 형변환 typecasting 이란?

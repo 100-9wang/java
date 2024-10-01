@@ -1,3 +1,5 @@
+package Operator;
+
 public class Denylogic_Operator {
     public static void main(String[] args) {
         boolean play = true;

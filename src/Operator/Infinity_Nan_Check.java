@@ -1,3 +1,5 @@
+package Operator;
+
 public class Infinity_Nan_Check {
     public static void main(String[] args) {
         int x = 5;

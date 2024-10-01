@@ -1,3 +1,5 @@
+package Operator;
+
 public class Compare_Operator {
     public static void main(String[] args) {
         //( <, <=, >, >=, ==, != ) 사용해서 boolean 논리 값 산출

@@ -1,3 +1,5 @@
+package basic;
+
 public class VariableName {
     //변수 이름 짓는 법
     // 1. 저장할 값에 어울리는 이름

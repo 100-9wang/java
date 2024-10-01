@@ -1,3 +1,5 @@
+package basic;
+
 public class VariableUse {
     public static void main(String[] args) {
         int hour = 3;

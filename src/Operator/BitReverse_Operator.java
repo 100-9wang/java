@@ -1,3 +1,5 @@
+package Operator;
+
 public class BitReverse_Operator {
     public static void main(String[] args) {
         int v1 = 10;

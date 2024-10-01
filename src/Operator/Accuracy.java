@@ -1,3 +1,5 @@
+package Operator;
+
 public class Accuracy {
     public static void main(String[] args) {
 //        정확한 계산을 위해서는 정수를 사용하는게 좋다

@@ -1,3 +1,5 @@
+package Operator;
+
 public class String_Equals {
     public static void main(String[] args) {
         String strval1 = "신민철";

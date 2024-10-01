@@ -1,3 +1,5 @@
+package Operator;
+
 public class InputData_NaN {
     public static void main(String[] args) {
         // / 와 % 일 때의 주의점

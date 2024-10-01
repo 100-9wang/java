@@ -1,3 +1,5 @@
+package Operator;
+
 public class Increase_Decrease {
     public static void main(String[] args) {
         //증감 연산자
