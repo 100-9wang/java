@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5aae6941-ed02-4132-a9af-17709c525fe5" name="변경" comment="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;문자열 비교(==, equals),&#10;배열생성 및 동적 객체 선언(new), &#10;NPE 주의사항 및 예방하는법 학습">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Java_.iml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;100-9wang&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/100-9wang/java.git&quot;,
+    &quot;accountId&quot;: &quot;e6d1a070-ff1c-4214-856a-f9e508800476&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2mmaOXlrYVEJ890c5CdRVB1WGGW" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "애플리케이션.Array_Val_List.executor": "Run",
+    "애플리케이션.Continue.executor": "Run",
+    "애플리케이션.Do_While.executor": "Run",
+    "애플리케이션.For.executor": "Run",
+    "애플리케이션.If.executor": "Run",
+    "애플리케이션.IfNested.executor": "Run",
+    "애플리케이션.Infinity_Nan_Check.executor": "Run",
+    "애플리케이션.InputData_NaN.executor": "Run",
+    "애플리케이션.Multiple_Table.executor": "Run",
+    "애플리케이션.Nested_Star.executor": "Run",
+    "애플리케이션.StringEquals.executor": "Run",
+    "애플리케이션.Switch_Case.executor": "Run",
+    "애플리케이션.WhileKeyCtrl.executor": "Run",
+    "애플리케이션.WhileKeyCtrl2.executor": "Run",
+    "애플리케이션.test.executor": "Run"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="5aae6941-ed02-4132-a9af-17709c525fe5" name="변경" comment="" />
+      <created>1727684176215</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1727684176215</updated>
+    </task>
+    <task id="LOCAL-00001" summary="feat : API활용 Java &amp; Spring 백엔드 과정 1일차&#10;&#10;변수 선언과 초기화, 데이터 타입, 타입 캐스팅(자동, 강제) 학습">
+      <option name="closed" value="true" />
+      <created>1727685357134</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727685357134</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat : API활용 Java &amp; Spring 백엔드 과정 2일차&#10;&#10;연산 방법 및 우선순위, 연산자 종류 (단항, 이항, 삼항), 오버, 언더플로우 학습&#10;-단항(부호, 증감, 비트 반전) &#10;-이항(산술, 문자연결, 대입, 비교, 논리, 비트논리, 비트이동)&#10;-삼항(조건 연산)">
+      <option name="closed" value="true" />
+      <created>1727747023246</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727747023246</updated>
+    </task>
+    <task id="LOCAL-00003" summary="refactor : 종류별 코드 정리&#10;&#10;코드 분류">
+      <option name="closed" value="true" />
+      <created>1727749299193</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1727749299193</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;&lt;제어문&gt;&#10;조건문(if, switch), 반복문(for, while, do-while), 탈출(break,continue) 학습">
+      <option name="closed" value="true" />
+      <created>1727763051242</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1727763051242</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;문자열 비교(==, equals),&#10;배열생성 및 동적 객체 선언(new), &#10;NPE 주의사항 및 예방하는법 학습">
+      <option name="closed" value="true" />
+      <created>1727771801912</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727771801912</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat : API활용 Java &amp; Spring 백엔드 과정 1일차&#10;&#10;변수 선언과 초기화, 데이터 타입, 타입 캐스팅(자동, 강제) 학습" />
+    <MESSAGE value="feat : API활용 Java &amp; Spring 백엔드 과정 2일차&#10;&#10;연산 방법 및 우선순위, 연산자 종류 (단항, 이항, 삼항), 오버, 언더플로우 학습&#10;-단항(부호, 증감, 비트 반전) &#10;-이항(산술, 문자연결, 대입, 비교, 논리, 비트논리, 비트이동)&#10;-삼항(조건 연산)" />
+    <MESSAGE value="refactor : 종류별 코드 정리&#10;&#10;코드 분류" />
+    <MESSAGE value="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;&lt;제어문&gt;&#10;조건문(if, switch), 반복문(for, while, do-while), 탈출(break,continue) 학습" />
+    <MESSAGE value="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;문자열 비교(==, equals),&#10;배열생성 및 동적 객체 선언(new), &#10;NPE 주의사항 및 예방하는법 학습" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : API활용 Java &amp; Spring 백엔드 과정 3일차&#10;&#10;문자열 비교(==, equals),&#10;배열생성 및 동적 객체 선언(new), &#10;NPE 주의사항 및 예방하는법 학습" />
+  </component>
+</project>
