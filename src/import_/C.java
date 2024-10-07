@@ -1,6 +1,6 @@
 package import_;
 
-import Class_lib.A;
+import class_lib1.A;
 
 public class C {
     public C(){
