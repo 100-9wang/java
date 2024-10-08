@@ -1,4 +1,4 @@
-package class_lib1;
+package class_lib;
 
 public class Calculator2_Main {
     public static void main(String[] args) {

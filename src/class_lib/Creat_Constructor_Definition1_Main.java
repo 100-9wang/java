@@ -1,4 +1,4 @@
-package class_lib1;
+package class_lib;
 
 public class Creat_Constructor_Definition1_Main {
     public static void main(String[] args) {

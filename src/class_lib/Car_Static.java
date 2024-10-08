@@ -1,4 +1,4 @@
-package class_lib1;
+package class_lib;
 
 public class Car_Static {
     int speed;

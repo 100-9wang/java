@@ -1,4 +1,4 @@
-package class_lib1;
+package class_lib;
 
 public class Field_Init_Val {
 
