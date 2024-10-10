@@ -32,8 +32,4 @@ public class Misson implements Remotecontrol{
 
         System.out.println("현재 Smart TV 볼륨 : " + volume);
     }
-
-    public void search(String url){
-        System.out.println(url + "을 검색합니다.");
-    }
 }
