@@ -1,4 +1,4 @@
-package test;
+package Exception;
 
 public class class_check {
     public static void main(String[] args) {
