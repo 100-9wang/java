@@ -1,20 +1,13 @@
 package project;
 
-import class_lib.B;
-import control_flow.Switch_Case_Nobreak;
-
-import javax.management.relation.RelationSupport;
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.io.FileReader;
 
 
-public class home_app {
+public class Mainapp {
     // 예매 확인 단계에서 발급번호를 입력했을때 예매 정보가 나오게 하려면 키맵을 써야한다는걸 까먹ㅇ므
-    private static Map<Integer, String> mvMap = new HashMap<>();
-
     public static void main(String[] args) throws Exception {
 
         Scanner s = new Scanner(System.in);
@@ -42,9 +35,7 @@ public class home_app {
                     Cancel();
                     break;
                 case 3:
-//                    Check();
-                    System.out.println("확인라인");
-                    System.out.println();
+                    Check();
                     break;
                 case 4:
                     System.out.println("관리자 기능은 현재 개발중입니다.");
@@ -59,11 +50,9 @@ public class home_app {
         }
     }
 
-
-    // 영화 예약 메소드
     private static void RsMovie() throws Exception {
-        File mv_nameFile = new File("D:/Java_/java/mvName.txt");
-    // 줄 수가 많지 않은데 굳이 StringBuilder를 써야하나 싶은 의문이 듬
+        File mv_nameFile = new File("C:/gwangmin/mvname.txt");
+        // 줄 수가 많지 않은데 굳이 StringBuilder를 써야하나 싶은 의문이 듬
 //        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {
 //            StringBuilder sb = new StringBuilder();
 //            String line;
@@ -77,15 +66,15 @@ public class home_app {
 
         //배열 형식
         int line = 0;
-        try(BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {
+        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {
             while (rd.readLine() != null) {
                 line++;
             }
         }
         String names[] = new String[line];
 
-        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))){
-            for (int i = 0; i < line; i++){
+        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {
+            for (int i = 0; i < line; i++) {
                 names[i] = rd.readLine();
             }
 
@@ -98,6 +87,7 @@ public class home_app {
             Scanner s1 = new Scanner(System.in);
             int mvNum = s1.nextInt();
 
+
             // 조건이 두가지이기 떄문에  조건식을 and를 써야함
             // 키 입력 수가 0보다 작으면 인덱스 주소값은 -1됨
             // 키 입력 수가 배열 인덱스의 길이보다 작거나 같아야함
@@ -107,24 +97,28 @@ public class home_app {
                 System.out.println(mvname + " 을 예매 하셨습니다.");
                 System.out.println("[ 발급번호 : " + Rsnum + " ] 입니다.");
                 System.out.println("즐거운 관람 되십시오.");
-                SaveMvNum(Rsnum);
+                SaveMvNum(names[mvNum], Rsnum);
             } else {
                 System.out.println("영화를 잘못 선택 하셨습니다.");
             }
         }
     }
 
-    //예매번호 난수 추출
-    private static int RandomNum() {
-        return (int)((Math.random() * 1000000)  + 1000);
-    }
-
-    // 예매번호를 mvrsnum에 저장
-    private static void SaveMvNum(int num) throws IOException{
-        try(BufferedWriter wt = new BufferedWriter(new FileWriter("D:/Java_/java/mvrsnum.txt",true))){
-            wt.write(num + "\n");
+        //예매번호 난수 추출
+        private static int RandomNum () {
+            return (int) ((Math.random() * 1000000) + 1000);
         }
-    }
+
+        // 예매번호를 mvrsnum에 저장
+        private static void SaveMvNum (String name,int num) throws IOException {
+            HashMap<String, Integer> mvmap = new HashMap<String, Integer>();
+
+            try (BufferedWriter wt = new BufferedWriter(new FileWriter("C:/gwangmin/mvrsnum.txt", true))) {
+                wt.write(name + "\t");
+                wt.write(num + "\n");
+            }
+        }
+
 
     // 예매 취소
     private static void Cancel() throws IOException {
@@ -132,43 +126,82 @@ public class home_app {
         System.out.print("발급번호를 입력하세요 : ");
         int RsNum = s.nextInt();
 
-        File mvrsFile = new File("d:/java_/java/mvrsnum.txt");
-        File tempFile = new File("d:/java_/java/temp.txt");
+        File mvrsFile = new File("C:/gwangmin/mvrsnum.txt");
+        File tempFile = new File("C:/gwangmin/temp.txt");
 
         try (BufferedReader rd = new BufferedReader(new FileReader(mvrsFile));
              BufferedWriter wt = new BufferedWriter(new FileWriter(tempFile))) {
 
             String line;
             boolean found = false; // 요건 파일을 비교할때 찾았는지 못찾았는지를
-                                                // 알려줄 변수 초깃값을 못찾음으로 설정
+                                   // 알려줄 변수 초깃값을 못찾음으로 설정
 
             while ((line = rd.readLine()) != null) {
-                if (Integer.parseInt(line) == RsNum) {
-                    found = true;
-                    continue;
-                }
+                String[] parts = line.split("\t");
+                if (parts.length > 1) {
+                    try{
+                        int inputnum = Integer.parseInt(parts[1]);
+                        if (inputnum == RsNum) {
+                        found = true;
+                        continue;
+                    }
+                } catch (NumberFormatException e){
+                        System.out.println("발급번호 못찾음");
+                        e.printStackTrace();
+                    }
+            }
                 wt.write(line);
-                wt.newLine();
+                wt.write("\n");
             }
             if (found) {
+                mvrsFile.delete();
                 System.out.println("예매 취소가 정상적으로 처리되었습니다.");
             } else {
-                System.out.println("발급 번호를 다시 확인해주세요.");
+                System.out.println("입력하신 발급번호가 정확하지 않습니다.");
+                System.out.println("다시 확인하여 주세요.");
             }
+
         }
     }
+        // 예약 확인 메뉴
+        private static void Check () throws Exception {
 
-        private static void Check () {
-        Scanner s = new Scanner(System.in);
-        System.out.println("발급 번호를 입력하세요 : ");
-        int RsNum = s.nextInt();
+            Scanner s = new Scanner(System.in);
+            System.out.println("발급 번호를 입력하세요 : ");
+            int RsNum = s.nextInt();
 
-            File mvrsFile = new File( "D:/Java/java_/mvrsnum.txt");
-            try(BufferedReader br = new BufferedReader(new FileReader(mvrsFile))) {
+            File mvrsnum = new File("C:/gwangmin/temp.txt");
+            try (BufferedReader br = new BufferedReader(new FileReader(mvrsnum))) {
+
+                String line;
+                String mvname = "";
                 boolean found = false;
-                while (found);
+
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split("\t");
+                    if (parts.length > 1) {
+                        try {
+                            int inputnum = Integer.parseInt(parts[1]);
+                            if (inputnum == RsNum) {
+                                found = true;
+                                mvname = parts[0];
+                                break;
+
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("발급번호 못찾음");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                if(found) {
+                    System.out.println("예매하신 영화는 " + mvname + "입니다");
+
+                } else {
+                    System.out.println("입력하신 발급번호가 정확하지 않습니다.");
+                    System.out.println("다시 확인하여 주세요.");
+                }
             }
-    }
-    }
+        }
 
-
+}
