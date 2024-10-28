@@ -40,15 +40,28 @@ public class function_scores {
         }
     }
     public void return_menu() {
-        if (user_Type.equals("th")) {
-            th_menu();
-        } else if (user_Type.equals("st")) {
-            st_menu();
+            if (user_Type == null) {
+                System.out.println("로그인 상태가 아닙니다. 메인 메뉴로 돌아갑니다.");
+                main_menu();
+                return;
+            }
+            if (user_Type.equals("th")) {
+                th_menu();
+            } else if (user_Type.equals("st")) {
+                st_menu();
+            }
         }
-    }
     public boolean logout() {
-        login = false;
-        return false;
+        if (login) {
+            login = false;
+            login_userID = null;
+            user_Type = null;
+            System.out.println("로그아웃 되었습니다.");
+            return true;
+        } else {
+            System.out.println("이미 로그아웃 상태입니다.");
+            return false;
+        }
     }
     public void exit() {
         System.out.println("성적조회 프로그램을 종료합니다.");
@@ -106,6 +119,7 @@ public class function_scores {
         }
         return "false";
     }
+
     public boolean login_() {
         System.out.print("아이디: ");
         String ID = s.nextLine();
@@ -115,22 +129,21 @@ public class function_scores {
         String result = login_check(ID, PW);
         if (result.equals("th")) {
             user_Type = "th";
-            th_menu();
             login = true;
             login_userID = ID;
+            th_menu(); // 로그인 성공 후 교육자 메뉴 호출
+            return true;
         } else if (result.equals("st")) {
             user_Type = "st";
-            st_menu();
             login = true;
             login_userID = ID;
+            st_menu(); // 로그인 성공 후 학생 메뉴 호출
+            return true;
         } else {
-            login = false;
             count++;
             System.out.println("아이디 또는 비밀번호가 일치하지 않습니다. 다시 시도하세요.");
             if (count >= 3) {
-                System.out.println("회원가입을 하시겠습니까 ?");
-                System.out.println("1. 예 | 2. 아니오 ");
-                System.out.print("선택 : ");
+                System.out.println("회원가입을 하시겠습니까 ? (1. 예 | 2. 아니오) ");
                 String response = s.nextLine();
                 switch (response) {
                     case "1":
@@ -138,17 +151,19 @@ public class function_scores {
                         break;
                     case "2":
                         System.out.println("다시 로그인을 진행합니다.");
+                        return false; // 메인 루프 종료
                 }
             }
         }
-        return false;
+        return false; // 로그인 실패
     }
+
     public void login() {
-        if (!login) {
-            while (!login) {
-                login = login_();
-                if (!login) {
-                }
+        count = 0; // 로그인 시도 횟수 초기화
+        while (!login) {
+            boolean success = login_(); // 로그인 시도
+            if (success) {
+                break; // 로그인 성공하면 루프 종료
             }
         }
     }
@@ -156,12 +171,13 @@ public class function_scores {
 
     // ㅔㅁ뉴
     public void th_menu() {
-        while (true) {
+        while(true) {
+            System.out.println("[ 교육자 메뉴 ]");
             System.out.println("-------------------------------------------------------------------------------------");
-            System.out.println("교육자 메뉴 : 1. 과목점수 입력 | 2. 점수평균 입력 | 3. 점수합계 입력 | 4. 등수입력 | 5. 내 정보 | 0. 종료 ");
+            System.out.println("1. 과목점수 입력 | 2. 점수평균 입력 | 3. 점수합계 입력 | 4. 등수입력 | 5. 내 정보 | 0. 종료 ");
+            System.out.println("-------------------------------------------------------------------------------------");
             System.out.print("메뉴를 선택하세요 : ");
             String inputNum = s.nextLine();
-            System.out.println("-------------------------------------------------------------------------------------");
 
             switch (inputNum) {
                 case "1":
@@ -181,27 +197,28 @@ public class function_scores {
                     break;
                 case "0":
                     exit();
-                    break;
+                    return;
             }
         }
     }
     public void st_menu() {
         while (true) {
+            System.out.println("[ 학생 메뉴 ]");
             System.out.println("-------------------------------------------------------------------------------------");
-            System.out.println("학생 메뉴 : 1. 과목점수 조회 | 2. 과목평균 조회 | 3. 과목합계 조회 | 4. 등수 조회 | 5. 내 정보 | 0. 종료 ");
+            System.out.println("1. 과목점수 조회 | 2. 과목평균 조회 | 3. 과목합계 조회 | 4. 등수 조회 | 5. 내 정보 | 0. 종료 ");
+            System.out.println("-------------------------------------------------------------------------------------");
             System.out.print("메뉴를 선택하세요 : ");
             String inputNum = s.nextLine();
-            System.out.println("-------------------------------------------------------------------------------------");
 
             switch (inputNum) {
                 case "1":
-                    //view_scores();
+                    view_scores();
                     break;
                 case "2":
-                    //view_avg();
+                    view_avg();
                     break;
                 case "3":
-                    //view_total();
+                    view_total();
                     break;
                 case "4":
                     //view_rank();
@@ -411,6 +428,7 @@ public class function_scores {
         sc.setMath(s.nextInt());
         System.out.print("과학 : ");
         sc.setScience(s.nextInt());
+        s.nextLine();
         try {
             String sql = "INSERT INTO scores (grades, korean, english, math, science, st_id) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -424,6 +442,8 @@ public class function_scores {
 
             System.out.println("과목별 점수 입력을 완료했습니다.");
             pstmt.close();
+
+            th_menu();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -569,11 +589,10 @@ public class function_scores {
         try {
             String sql = "UPDATE students SET st_pw = ?, st_name = ?, st_grade = ? WHERE st_id =?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(5, login_userID);
-            pstmt.setString(1, th.getth_pw());
-            pstmt.setString(2, th.getth_class());
-            pstmt.setString(3, th.getth_name());
-            pstmt.setString(4, th.getth_email());
+            pstmt.setString(4, login_userID);
+            pstmt.setString(1,st.getst_pw());
+            pstmt.setString(2, st.getst_name());
+            pstmt.setString(3, st.getst_grade());
             pstmt.executeUpdate();
             pstmt.close();
             System.out.println("학생정보가 성공적으로 수정되었습니다.");
@@ -604,9 +623,75 @@ public class function_scores {
     }
 
     //students 기능
-    //view_scores(){}
-    //view_avg(){}
-    //view_total(){}
+    public  void  view_scores() {
+        System.out.println( "과목 점수 조회를 선택하셨습니다.");
+        System.out.print("과목 성적을 조회 할 아이디를 입력해주세요 : ");
+        st.setst_id(s.nextLine());
+        try{
+            String sql = "SELECT korean, english, math, science FROM scores WHERE st_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, st.getst_id());
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                sc.setKorean(rs.getInt("korean"));
+                sc.setEnglish(rs.getInt("english"));
+                sc.setMath(rs.getInt("math"));
+                sc.setScience(rs.getInt("science"));
+                System.out.println(
+                        "국어 : " + sc.getKorean()  + "\n" +
+                        "영어 : " + sc.getEnglish() + "\n"+
+                        "수학 : " + sc.getMath() + "\n" +
+                        "과학 : " + sc.getScience());
+            }
+            rs.close();
+            pstmt.close();
+            } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void view_avg(){
+        System.out.println("과목 평균 조회를 선택하셨습니다.");
+        System.out.print("과목 평균을 조회 할 아이디를 입력해주세요 : ");
+        st.setst_id(s.nextLine());
+        try{
+            String sql = "SELECT sc_avg FROM scores WHERE st_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, st.getst_id());
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                sc.setSc_avg(rs.getInt("sc_avg"));
+                System.out.println(
+                        "과목 평균 : " + sc.getSc_avg());
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void view_total() {
+        System.out.println("과목 총합 조회를 선택하셨습니다.");
+        System.out.print("과목 총합을 조회 할 아이디를 입력해주세요 : ");
+        st.setst_id(s.nextLine());
+        try {
+            String sql = "SELECT sc_total FROM scores WHERE st_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, st.getst_id());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                sc.setSc_total(rs.getInt("sc_total"));
+                System.out.println(
+                        "과목 총합 : " + sc.getSc_total());
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     //view_rank(){}
 }
 
