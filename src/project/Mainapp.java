@@ -110,12 +110,12 @@ public class Mainapp {
         }
 
         // 예매번호를 mvrsnum에 저장
-        private static void SaveMvNum (String name,int num) throws IOException {
+        private static void SaveMvNum (String name, int num) throws IOException {
             HashMap<String, Integer> mvmap = new HashMap<String, Integer>();
 
             try (BufferedWriter wt = new BufferedWriter(new FileWriter("C:/gwangmin/mvrsnum.txt", true))) {
-                wt.write(name + "\t");
-                wt.write(num + "\n");
+                wt.write(name + "\t" + num);
+
             }
         }
 
@@ -170,7 +170,7 @@ public class Mainapp {
             System.out.println("발급 번호를 입력하세요 : ");
             int RsNum = s.nextInt();
 
-            File mvrsnum = new File("C:/gwangmin/temp.txt");
+            File mvrsnum = new File("C:/gwangmin/mvrsnum.txt");
             try (BufferedReader br = new BufferedReader(new FileReader(mvrsnum))) {
 
                 String line;

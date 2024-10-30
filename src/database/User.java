@@ -1,6 +1,6 @@
-package report;
+package database;
 
-public class users {
+public class User {
     private String user_ID;
 
     private String user_Name;
@@ -54,12 +54,11 @@ public class users {
 
     @Override
     public String toString(){
-        return "아이디 : " + user_ID
-                + "이름 : " + user_Name
-                + "비밀번호 : " + user_PW
-                + "나이 : " + user_Age
-                + "이메일 : " + user_Email
-                + "]";
+        return String.format("아이디 : " + this.user_ID + "\n"
+                + "이름 : " + this.user_Name + "\n"
+                + "비밀번호 : " + this.user_PW + "\n"
+                + "나이 : " + this.user_Age + "\n"
+                + "이메일 : " + this.user_Email);
     }
 
 }

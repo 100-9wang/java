@@ -1,4 +1,4 @@
-package report;
+package database;
 
 import java.util.Date;
 import java.sql.Blob;
@@ -11,6 +11,16 @@ public class Board {
     private String b_content;
     private String b_writer;
     private Date b_date;
+    private String b_filename;
+    private Blob b_filedata;
+
+    //b_filedata set-get
+    public Blob getB_filedata() {
+        return b_filedata;
+    }
+    public void setB_filedata(Blob b_filedata) {
+        this.b_filedata = b_filedata;
+    }
 
     // b_no set-get
     public int getB_no() {
@@ -52,13 +62,22 @@ public class Board {
         this.b_date = b_date;
     }
 
+    // b_filename set-get
+    public String getB_filename() {
+        return b_filename;
+    }
+    public void setB_filename(String b_filename) {
+        this.b_filename = b_filename;
+    }
 
     @Override
     public String toString(){
         return String.format("번호 : " + this.b_no + "\n"
+                + "제목 : " + this.b_title + "\n"
+                + "주제 : " + this.b_content + "\n"
                 + "글쓴이 : " + this.b_writer + "\n"
                 + "날짜 : " + this.b_date + "\n"
-                + "주제 : " + this.b_title + "\n"
+                + "파일 이름 : " + this.b_filename + "\n"
         );
     }
 }
