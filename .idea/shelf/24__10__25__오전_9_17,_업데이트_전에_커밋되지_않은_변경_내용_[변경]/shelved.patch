@@ -1,0 +1,1593 @@
+Index: src/database/Connection_MysqlDB.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Connection_MysqlDB.java b/src/database/Connection_MysqlDB.java
+new file mode 100644
+--- /dev/null	(date 1729645796799)
++++ b/src/database/Connection_MysqlDB.java	(date 1729645796799)
+@@ -0,0 +1,37 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++
++public class Connection_MysqlDB {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 등록
++            Class.forName("com.mysql.cj.jdbc.Driver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:mysql:thin//@localhost:3306/servletex",
++                    "root",
++                    "1234"
++            );
++
++            System.out.println("연결 성공");
++        } catch (ClassNotFoundException e) {
++            e.printStackTrace();
++        } catch (SQLException e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    //연결 끊어서 자원 낭비 줄이기
++                    conn.close();
++                    System.out.println("연결 종료");
++                } catch (SQLException e) {
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/database/User_Insert.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/User_Insert.java b/src/database/User_Insert.java
+new file mode 100644
+--- /dev/null	(date 1729660010696)
++++ b/src/database/User_Insert.java	(date 1729660010696)
+@@ -0,0 +1,62 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.PreparedStatement;
++
++
++
++public class User_Insert {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 를 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // 매개변수화 된 SQL문 작성
++            String sql = "" +
++                    "INSERT INTO users(user_id, user_name, user_pw, user_age, user_email)" +
++                    "VALUES(?, ?, ?, ?, ?)";
++
++            // PreparedStatement 얻기 및 값 지정
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++            pstmt.setString(1, "winter");
++            pstmt.setString(2, "한겨울");
++            pstmt.setString(3, "12345");
++            pstmt.setInt(4, 25);
++            pstmt.setString(5, "carpediem2001@nate.com");
++
++            // SQL문 실행
++            int rows = pstmt.executeUpdate();
++            System.out.println("저장된 행 수 : " + rows);
++
++            // PreparedStatement 닫기
++            pstmt.close();
++
++        } catch (ClassNotFoundException e) {
++            e.printStackTrace();
++        } catch (SQLException e) {
++            e.printStackTrace();
++        }finally {
++                if (conn != null) {
++                    try {
++                        // 연결 끊기 (자원낭비)
++                        conn.close();
++                        System.out.println("연결 끊기");
++                    } catch (SQLException e) {}
++                }
++            }
++        }
++    }
++
++
++
+Index: src/database/Board_Insert.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Board_Insert.java b/src/database/Board_Insert.java
+new file mode 100644
+--- /dev/null	(date 1729652645218)
++++ b/src/database/Board_Insert.java	(date 1729652645218)
+@@ -0,0 +1,74 @@
++package database;
++
++import java.io.FileInputStream;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++
++
++public class Board_Insert {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 를 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // 매개변수화 된 SQL문 작성
++            String sql = "" + "INSERT INTO boards(b_no, b_title, b_content, b_writer, b_date, b_filename, b_filedata)" +
++                    "VALUES(SEQ_B_NO.NEXTVAL, ?, ?, ?, SYSDATE, ?, ?)";
++
++            // PreparedStatement 얻기 및 값 지정
++            PreparedStatement pstmt = conn.prepareStatement(
++                                       sql, new String[]{"b_no"});
++            //b_title
++            pstmt.setString(1, "눈오는 날");
++            //b_content
++            pstmt.setString(2, "함박눈이 내려요");
++            //b_writer
++            pstmt.setString(3, "winter");
++            //b_filename
++            pstmt.setString(4, "snow.jpg");
++            //b_filedata
++            pstmt.setBlob(5, new FileInputStream("C:/gwangmin/새 폴더/snow.jpg"));
++
++            // SQL문 실행
++            int rows = pstmt.executeUpdate();
++            System.out.println("저장된 행 수 : " + rows);
++            //bno값 얻기
++            if(rows == 1) {
++                ResultSet rs = pstmt.getGeneratedKeys();
++                if(rs.next()) {
++                    int bno= rs.getInt(1);
++                    System.out.println("저장된 bno : " + bno);
++                }
++                rs.close();
++            }
++            // PreparedStatement 닫기
++            pstmt.close();
++
++        } catch (Exception e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    // 연결 끊기 (자원낭비)
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
++
++
+Index: src/database/Insert_Data.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Insert_Data.java b/src/database/Insert_Data.java
+new file mode 100644
+--- /dev/null	(date 1729654984846)
++++ b/src/database/Insert_Data.java	(date 1729654984846)
+@@ -0,0 +1,60 @@
++package database;
++
++import java.io.FileInputStream;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++
++
++public class Insert_Data {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 를 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // 매개변수화 된 SQL문 작성
++            String sql = "" + "INSERT INTO accounts (ano, owner, balance) " +
++                    "VALUES ('222-222-2222', '한겨울', 0)";
++
++            // PreparedStatement 얻기 및 값 지정
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++
++            // SQL문 실행
++            int rows = pstmt.executeUpdate();
++            System.out.println("저장된 행 수 : " + rows);
++            //bno값 얻기
++            if(rows == 1) {
++                ResultSet rs = pstmt.getGeneratedKeys();
++                if(rs.next()) {
++                    int bno= rs.getInt(1);
++                    System.out.println("저장된 bno : " + bno);
++                }
++                rs.close();
++            }
++            // PreparedStatement 닫기
++            pstmt.close();
++
++        } catch (Exception e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    // 연결 끊기 (자원낭비)
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
+Index: src/database/Create_Table.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Create_Table.java b/src/database/Create_Table.java
+new file mode 100644
+--- /dev/null	(date 1729654102104)
++++ b/src/database/Create_Table.java	(date 1729654102104)
+@@ -0,0 +1,56 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.Statement;
++
++public class Create_Table {
++    public static void main(String[] args) {
++        Connection conn = null;
++
++        try {
++            // JDBC Driver 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 데이터베이스 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // CREATE TABLE SQL 문
++            String sql = "CREATE TABLE accounts (" +
++                    "ano varchar(20) PRIMARY KEY, " +
++                    "owner varchar(20) not null, " +
++                    "balance number not null " +
++                    ")";
++
++            // Statement 객체 생성
++            Statement stmt = conn.createStatement();
++
++            // SQL 문 실행
++            stmt.executeUpdate(sql);
++            System.out.println("테이블 'accounts'가 성공적으로 생성되었습니다.");
++
++            // 자원 해제
++            stmt.close();
++
++        } catch (ClassNotFoundException e) {
++            e.printStackTrace();
++        } catch (SQLException e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {
++                    e.printStackTrace();
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/database/Update_Data.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Update_Data.java b/src/database/Update_Data.java
+new file mode 100644
+--- /dev/null	(date 1729730027245)
++++ b/src/database/Update_Data.java	(date 1729730027245)
+@@ -0,0 +1,56 @@
++package database;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.ResultSet;
++import java.sql.PreparedStatement;
++import java.sql.Blob;
++import java.io.*;
++
++public class Update_Data {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            String sql = new StringBuilder()
++                    .append("UPDATE boards SET ")
++                    .append("b_no=?, ")
++                    .append("b_content=?, ")
++                    .append("b_filename=?, ")
++                    .append("WHERE b_title=?")
++                    .toString();
++
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++            pstmt.setInt(1, 1);
++            pstmt.setString(2, "함박눈이 내려요");
++            pstmt.setString(3, "snow.jpg");
++            pstmt.setString(4, "눈오는 날");
++
++            int rows = pstmt.executeUpdate();
++            System.out.println("수정된 행 수 : " + rows);
++
++            pstmt.close();
++
++        } catch (ClassNotFoundException e) {
++            System.out.println("클래스 못찾음");
++            e.printStackTrace();
++        } catch (SQLException e) {
++            System.out.println();
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 종료");
++                } catch (SQLException e){
++                }
++            }
++        }
++    }
++}
+Index: src/database/BlobToImg.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/BlobToImg.java b/src/database/BlobToImg.java
+new file mode 100644
+--- /dev/null	(date 1729661720921)
++++ b/src/database/BlobToImg.java	(date 1729661720921)
+@@ -0,0 +1,39 @@
++package database;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.ResultSet;
++import java.sql.PreparedStatement;
++import java.sql.Blob;
++import java.io.*;
++
++public class BlobToImg {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++
++        } catch (ClassNotFoundException e) {
++            System.out.println("클래스 못찾음");
++            e.printStackTrace();
++        } catch (SQLException e) {
++            System.out.println();
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 종료");
++                } catch (SQLException e){
++                }
++            }
++        }
++
++    }
++}
+Index: src/database/Select_Data.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Select_Data.java b/src/database/Select_Data.java
+new file mode 100644
+--- /dev/null	(date 1729669483246)
++++ b/src/database/Select_Data.java	(date 1729669483246)
+@@ -0,0 +1,65 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++
++
++public class Select_Data {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 를 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // 매개변수화 된 SQL문 작성
++            String sql = "" +
++                    "SELECT user_id, user_name, user_pw, user_age, user_email " +
++                    "FROM users " +
++                    "WHERE user_id=?";
++
++            //PreparedStatement 얻기 및 값 지정
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++            pstmt.setString(1, "winter");
++
++            //SQL 실행 후, ResultSet을 통해 데이터 읽기
++            ResultSet rs = pstmt.executeQuery();
++            if (rs.next()) { //만약 1개의 데이터 행을 가져왔을 경우
++                User user = new User();
++                user.setUser_ID(rs.getString("user_id"));
++                user.setUser_Name(rs.getString("user_name"));
++                user.setUser_PW(rs.getString("user_pw"));
++                user.setUser_Age(rs.getInt("user_age"));
++                user.setUser_Email(rs.getString("user_email"));
++                System.out.println(user);
++
++            } else { //만약 데이터 행을 가져오지 않았을 경우
++                System.out.println("사용자의 아이디가 존재 하지 않음");
++            }
++            rs.close();
++            pstmt.close();
++        } catch(Exception e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    // 연결 끊기 (자원낭비)
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
++
++
+Index: src/database/Delete_Data.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Delete_Data.java b/src/database/Delete_Data.java
+new file mode 100644
+--- /dev/null	(date 1729663012110)
++++ b/src/database/Delete_Data.java	(date 1729663012110)
+@@ -0,0 +1,42 @@
++package database;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.PreparedStatement;
++import java.io.*;
++
++public class Delete_Data {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            String sql ="" + "DELETE FROM boards WHERE b_writer=? ";
++
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++            pstmt.setString(1, "winter");
++
++            int rows = pstmt.executeUpdate();
++            System.out.println("삭제된 행 수 : " + rows);
++
++            pstmt.close();
++
++        } catch (Exception e) {
++            System.out.println("클래스 못찾음");
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 종료");
++                } catch (SQLException e){
++                }
++            }
++        }
++    }
++}
+Index: src/database/Board.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Board.java b/src/database/Board.java
+new file mode 100644
+--- /dev/null	(date 1729758882602)
++++ b/src/database/Board.java	(date 1729758882602)
+@@ -0,0 +1,83 @@
++package database;
++
++import java.util.Date;
++import java.sql.Blob;
++
++
++public class Board {
++
++    private int b_no;
++    private String b_title;
++    private String b_content;
++    private String b_writer;
++    private Date b_date;
++    private String b_filename;
++    private Blob b_filedata;
++
++    //b_filedata set-get
++    public Blob getB_filedata() {
++        return b_filedata;
++    }
++    public void setB_filedata(Blob b_filedata) {
++        this.b_filedata = b_filedata;
++    }
++
++    // b_no set-get
++    public int getB_no() {
++        return b_no;
++    }
++    public void setB_no(int b_no) {
++        this.b_no = b_no;
++    }
++
++    // b_title set-get
++    public String getB_title() {
++        return b_title;
++    }
++    public void setB_title(String b_title) {
++        this.b_title = b_title;
++    }
++
++    // b_content set-get
++    public String getB_content() {
++        return b_content;
++    }
++    public void setB_content(String b_content) {
++        this.b_content = b_content;
++    }
++
++    // b_writer set-get
++    public String getB_writer() {
++        return b_writer;
++    }
++    public void setB_writer(String b_writer) {
++        this.b_writer = b_writer;
++    }
++
++    // b_date set-get
++    public Date getB_date() {
++        return b_date;
++    }
++    public void setB_date(Date b_date) {
++        this.b_date = b_date;
++    }
++
++    // b_filename set-get
++    public String getB_filename() {
++        return b_filename;
++    }
++    public void setB_filename(String b_filename) {
++        this.b_filename = b_filename;
++    }
++
++    @Override
++    public String toString(){
++        return String.format("번호 : " + this.b_no + "\n"
++                + "제목 : " + this.b_title + "\n"
++                + "주제 : " + this.b_content + "\n"
++                + "글쓴이 : " + this.b_writer + "\n"
++                + "날짜 : " + this.b_date + "\n"
++                + "파일 이름 : " + this.b_filename + "\n"
++        );
++    }
++}
+Index: src/database/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/User.java b/src/database/User.java
+new file mode 100644
+--- /dev/null	(date 1729669429760)
++++ b/src/database/User.java	(date 1729669429760)
+@@ -0,0 +1,64 @@
++package database;
++
++public class User {
++    private String user_ID;
++
++    private String user_Name;
++
++    private String user_PW;
++
++    private int user_Age;
++
++    private String user_Email;
++
++
++    // ID get-set
++    public String getUser_ID() {
++        return user_ID;
++    }
++    public void setUser_ID(String user_ID) {
++        this.user_ID = user_ID;
++    }
++
++    // Name get-set
++    public String getUser_Name() {
++        return user_Name;
++    }
++    public void setUser_Name(String user_Name) {
++        this.user_Name = user_Name;
++    }
++
++    // PW get-set
++    public String getUser_PW() {
++        return user_PW;
++    }
++    public void setUser_PW(String user_PW) {
++        this.user_PW = user_PW;
++    }
++
++    // Age get-set
++    public int getUser_Age() {
++        return user_Age;
++    }
++    public void setUser_Age(int user_Age) {
++        this.user_Age = user_Age;
++    }
++
++    // Email get-set
++    public String getUser_Email() {
++        return user_Email;
++    }
++    public void setUser_Email(String user_Email) {
++        this.user_Email = user_Email;
++    }
++
++    @Override
++    public String toString(){
++        return String.format("아이디 : " + this.user_ID + "\n"
++                + "이름 : " + this.user_Name + "\n"
++                + "비밀번호 : " + this.user_PW + "\n"
++                + "나이 : " + this.user_Age + "\n"
++                + "이메일 : " + this.user_Email);
++    }
++
++}
+\ No newline at end of file
+Index: src/database/Select_Board.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Select_Board.java b/src/database/Select_Board.java
+new file mode 100644
+--- /dev/null	(date 1729672423090)
++++ b/src/database/Select_Board.java	(date 1729672423090)
+@@ -0,0 +1,69 @@
++package database;
++
++import oracle.jdbc.proxy.annotation.Pre;
++
++import java.io.FileOutputStream;
++import java.io.InputStream;
++import java.io.OutputStream;
++import java.sql.Blob;
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.DriverManager;
++import java.sql.PreparedStatement;
++
++public class Select_Board {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521/xe",
++                    "system",
++                    "oracle"
++                    );
++            String sql = ""
++                    +"SELECT b_no, b_title, b_content, b_writer, b_date, b_filename, b_filedata "
++                    + "FROM boards "
++                    + "WHERE b_writer=? ";
++
++            PreparedStatement pstmt = conn.prepareStatement(sql);
++            pstmt.setString(1, "winter");
++
++            ResultSet rs = pstmt.executeQuery();
++            while(rs.next()) {
++                Board board = new Board();
++                board.setB_no(rs.getInt("b_no"));
++                board.setB_title(rs.getString("b_title"));
++                board.setB_content(rs.getString("b_content"));
++                board.setB_writer(rs.getString("b_writer"));
++                board.setB_date(rs.getDate("b_date"));
++                board.setB_filename(rs.getString("b_filename"));
++                board.setB_filedata(rs.getBlob("b_filedata"));
++                System.out.println(board);
++
++                Blob blob = board.getB_filedata();
++                if (blob != null) {
++                    InputStream is = blob.getBinaryStream();
++                    OutputStream os = new FileOutputStream("C:/gwangmin/새 폴더/" + board.getB_filename());
++                    is.transferTo(os);
++                    os.flush();
++                    os.close();
++                    is.close();
++                }
++            }
++            rs.close();
++
++            pstmt.close();
++        } catch (Exception e) {
++            e.printStackTrace();
++        } finally {
++            if(conn != null) {
++                try {
++                    conn.close();
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
+Index: src/project/Mainapp.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package project;\r\n\r\nimport java.io.*;\r\nimport java.util.HashMap;\r\nimport java.util.Scanner;\r\nimport java.io.FileReader;\r\n\r\n\r\npublic class Mainapp {\r\n    // 예매 확인 단계에서 발급번호를 입력했을때 예매 정보가 나오게 하려면 키맵을 써야한다는걸 까먹ㅇ므\r\n    public static void main(String[] args) throws Exception {\r\n\r\n        Scanner s = new Scanner(System.in);\r\n\r\n        while (true) {\r\n            System.out.println(\"프로그램이 시작됩니다.\");\r\n            System.out.println(\"-----------광민 극장-----------\");\r\n            System.out.println(\"     1. 영화 예매\");\r\n            System.out.println(\"     2. 예매 취소\");\r\n            System.out.println(\"     3. 예매 확인\");\r\n            System.out.println(\"     4. 관리자 설정\");\r\n            System.out.println(\"-----------광민 극장-----------\");\r\n            System.out.print(\"이용하시려는 메뉴 번호를 입력해주세요 : \");\r\n            System.out.println();\r\n            System.out.println(\"-----------------------------------\");\r\n\r\n            int click = s.nextInt();\r\n            s.nextLine();\r\n\r\n            switch (click) {\r\n                case 1:\r\n                    RsMovie();\r\n                    break;\r\n                case 2:\r\n                    Cancel();\r\n                    break;\r\n                case 3:\r\n                    Check();\r\n                    break;\r\n                case 4:\r\n                    System.out.println(\"관리자 기능은 현재 개발중입니다.\");\r\n                    System.out.println();\r\n                    break;\r\n                case 0:\r\n                    System.out.println(\"프로그램을 종료합니다.\");\r\n                    System.out.println();\r\n                    s.close();\r\n                    return;\r\n            }\r\n        }\r\n    }\r\n\r\n    private static void RsMovie() throws Exception {\r\n        File mv_nameFile = new File(\"C:/gwangmin/mvname.txt\");\r\n        // 줄 수가 많지 않은데 굳이 StringBuilder를 써야하나 싶은 의문이 듬\r\n//        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {\r\n//            StringBuilder sb = new StringBuilder();\r\n//            String line;\r\n//\r\n//            while ((line = rd.readLine()) != null) {\r\n//                sb.append(line).append(\"\\n\");\r\n//            }\r\n//\r\n//            String data = sb.toString();\r\n//            String[] names = data.split(\"\\n\");\r\n\r\n        //배열 형식\r\n        int line = 0;\r\n        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {\r\n            while (rd.readLine() != null) {\r\n                line++;\r\n            }\r\n        }\r\n        String names[] = new String[line];\r\n\r\n        try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {\r\n            for (int i = 0; i < line; i++) {\r\n                names[i] = rd.readLine();\r\n            }\r\n\r\n            System.out.println(\"영화 목록 : \");\r\n            for (int i = 0; i < names.length; i++) {\r\n                System.out.println(names[i]);\r\n            }\r\n\r\n            System.out.print(\"예매하실 영화를 선택해주세요 : \");\r\n            Scanner s1 = new Scanner(System.in);\r\n            int mvNum = s1.nextInt();\r\n\r\n\r\n            // 조건이 두가지이기 떄문에  조건식을 and를 써야함\r\n            // 키 입력 수가 0보다 작으면 인덱스 주소값은 -1됨\r\n            // 키 입력 수가 배열 인덱스의 길이보다 작거나 같아야함\r\n            if (mvNum > 0 && mvNum <= names.length) {\r\n                String mvname = names[mvNum - 1];\r\n                int Rsnum = RandomNum();\r\n                System.out.println(mvname + \" 을 예매 하셨습니다.\");\r\n                System.out.println(\"[ 발급번호 : \" + Rsnum + \" ] 입니다.\");\r\n                System.out.println(\"즐거운 관람 되십시오.\");\r\n                SaveMvNum(names[mvNum], Rsnum);\r\n            } else {\r\n                System.out.println(\"영화를 잘못 선택 하셨습니다.\");\r\n            }\r\n        }\r\n    }\r\n\r\n        //예매번호 난수 추출\r\n        private static int RandomNum () {\r\n            return (int) ((Math.random() * 1000000) + 1000);\r\n        }\r\n\r\n        // 예매번호를 mvrsnum에 저장\r\n        private static void SaveMvNum (String name,int num) throws IOException {\r\n            HashMap<String, Integer> mvmap = new HashMap<String, Integer>();\r\n\r\n            try (BufferedWriter wt = new BufferedWriter(new FileWriter(\"C:/gwangmin/mvrsnum.txt\", true))) {\r\n                wt.write(name + \"\\t\");\r\n                wt.write(num + \"\\n\");\r\n            }\r\n        }\r\n\r\n\r\n    // 예매 취소\r\n    private static void Cancel() throws IOException {\r\n        Scanner s = new Scanner(System.in);\r\n        System.out.print(\"발급번호를 입력하세요 : \");\r\n        int RsNum = s.nextInt();\r\n\r\n        File mvrsFile = new File(\"C:/gwangmin/mvrsnum.txt\");\r\n        File tempFile = new File(\"C:/gwangmin/temp.txt\");\r\n\r\n        try (BufferedReader rd = new BufferedReader(new FileReader(mvrsFile));\r\n             BufferedWriter wt = new BufferedWriter(new FileWriter(tempFile))) {\r\n\r\n            String line;\r\n            boolean found = false; // 요건 파일을 비교할때 찾았는지 못찾았는지를\r\n                                   // 알려줄 변수 초깃값을 못찾음으로 설정\r\n\r\n            while ((line = rd.readLine()) != null) {\r\n                String[] parts = line.split(\"\\t\");\r\n                if (parts.length > 1) {\r\n                    try{\r\n                        int inputnum = Integer.parseInt(parts[1]);\r\n                        if (inputnum == RsNum) {\r\n                        found = true;\r\n                        continue;\r\n                    }\r\n                } catch (NumberFormatException e){\r\n                        System.out.println(\"발급번호 못찾음\");\r\n                        e.printStackTrace();\r\n                    }\r\n            }\r\n                wt.write(line);\r\n                wt.write(\"\\n\");\r\n            }\r\n            if (found) {\r\n                mvrsFile.delete();\r\n                System.out.println(\"예매 취소가 정상적으로 처리되었습니다.\");\r\n            } else {\r\n                System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n                System.out.println(\"다시 확인하여 주세요.\");\r\n            }\r\n\r\n        }\r\n    }\r\n        // 예약 확인 메뉴\r\n        private static void Check () throws Exception {\r\n\r\n            Scanner s = new Scanner(System.in);\r\n            System.out.println(\"발급 번호를 입력하세요 : \");\r\n            int RsNum = s.nextInt();\r\n\r\n            File mvrsnum = new File(\"C:/gwangmin/temp.txt\");\r\n            try (BufferedReader br = new BufferedReader(new FileReader(mvrsnum))) {\r\n\r\n                String line;\r\n                String mvname = \"\";\r\n                boolean found = false;\r\n\r\n                while ((line = br.readLine()) != null) {\r\n                    String[] parts = line.split(\"\\t\");\r\n                    if (parts.length > 1) {\r\n                        try {\r\n                            int inputnum = Integer.parseInt(parts[1]);\r\n                            if (inputnum == RsNum) {\r\n                                found = true;\r\n                                mvname = parts[0];\r\n                                break;\r\n\r\n                            }\r\n                        } catch (NumberFormatException e) {\r\n                            System.out.println(\"발급번호 못찾음\");\r\n                            e.printStackTrace();\r\n                        }\r\n                    }\r\n                }\r\n                if(found) {\r\n                    System.out.println(\"예매하신 영화는 \" + mvname + \"입니다\");\r\n\r\n                } else {\r\n                    System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n                    System.out.println(\"다시 확인하여 주세요.\");\r\n                }\r\n            }\r\n        }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/project/Mainapp.java b/src/project/Mainapp.java
+--- a/src/project/Mainapp.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/project/Mainapp.java	(date 1729229872026)
+@@ -110,12 +110,12 @@
+         }
+ 
+         // 예매번호를 mvrsnum에 저장
+-        private static void SaveMvNum (String name,int num) throws IOException {
++        private static void SaveMvNum (String name, int num) throws IOException {
+             HashMap<String, Integer> mvmap = new HashMap<String, Integer>();
+ 
+             try (BufferedWriter wt = new BufferedWriter(new FileWriter("C:/gwangmin/mvrsnum.txt", true))) {
+-                wt.write(name + "\t");
+-                wt.write(num + "\n");
++                wt.write(name + "\t" + num);
++
+             }
+         }
+ 
+@@ -170,7 +170,7 @@
+             System.out.println("발급 번호를 입력하세요 : ");
+             int RsNum = s.nextInt();
+ 
+-            File mvrsnum = new File("C:/gwangmin/temp.txt");
++            File mvrsnum = new File("C:/gwangmin/mvrsnum.txt");
+             try (BufferedReader br = new BufferedReader(new FileReader(mvrsnum))) {
+ 
+                 String line;
+Index: src/database/Call_Procedure.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Call_Procedure.java b/src/database/Call_Procedure.java
+new file mode 100644
+--- /dev/null	(date 1729737687598)
++++ b/src/database/Call_Procedure.java	(date 1729737687598)
+@@ -0,0 +1,42 @@
++package database;
++
++import java.sql.*;
++
++public class Call_Procedure {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            String sql = "{ call user_create(?, ?, ?, ?, ?, ?) }";
++            CallableStatement cstmt = conn.prepareCall(sql);
++
++            cstmt.setString(1, "autumn");
++            cstmt.setString(2, "한가을");
++            cstmt.setString(3, "12345");
++            cstmt.setInt(4, 27);
++            cstmt.setString(5, "carpediem2001@nate.com");
++            cstmt.registerOutParameter(6, Types.INTEGER);
++
++            cstmt.execute();
++            int rows = cstmt.getInt(6);
++            System.out.println(rows);
++            cstmt.close();
++        } catch (Exception e) {
++            e.printStackTrace();
++        } finally {
++            if(conn != null) {
++                try {
++                    conn.close();
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
+Index: src/database/Create_Procedure.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Create_Procedure.java b/src/database/Create_Procedure.java
+new file mode 100644
+--- /dev/null	(date 1729737531589)
++++ b/src/database/Create_Procedure.java	(date 1729737531589)
+@@ -0,0 +1,70 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.Statement;
++
++public class Create_Procedure {
++    public static void main(String[] args) {
++        Connection conn = null;
++
++        try {
++            // JDBC Driver 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 데이터베이스 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // CREATE TABLE SQL 문
++            String sql = "CREATE OR REPLACE PROCEDURE user_create (" +
++                    "a_user_id IN users.user_id%TYPE, " +
++                    "a_user_name IN users.user_name%TYPE, " +
++                    "a_user_pw IN users.user_pw%TYPE, " +
++                    "a_user_age IN users.user_age%TYPE, " +
++                    "a_user_email IN users.user_email%TYPE, " +
++                    "a_rows OUT PLS_INTEGER " +
++                    ") " +
++                    "IS " +
++                    "BEGIN " +
++                    "INSERT INTO users (" +
++                    "user_id, user_name, user_pw, user_age, user_email" +
++                    ") " +
++                    "VALUES (" +
++                    "a_user_id, a_user_name, a_user_pw, a_user_age, a_user_email " +
++                    "); " +
++                    "a_rows := SQL%ROWCOUNT; " +
++                    "COMMIT; " +
++                    "END;";
++
++            // Statement 객체 생성
++            Statement stmt = conn.createStatement();
++
++            // SQL 문 실행
++            stmt.executeUpdate(sql);
++            System.out.println("procedure'이 성공적으로 생성되었습니다.");
++
++            // 자원 해제
++            stmt.close();
++
++        } catch (ClassNotFoundException e) {
++            e.printStackTrace();
++        } catch (SQLException e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {
++                    e.printStackTrace();
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/database/Call_Function.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Call_Function.java b/src/database/Call_Function.java
+new file mode 100644
+--- /dev/null	(date 1729739368576)
++++ b/src/database/Call_Function.java	(date 1729739368576)
+@@ -0,0 +1,46 @@
++package database;
++
++import java.sql.*;
++
++public class Call_Function {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            String sql = "{? = call user_login(?, ?)}";
++            CallableStatement cstmt = conn.prepareCall(sql);
++
++            cstmt.registerOutParameter(1, Types.INTEGER);
++            cstmt.setString(2, "winter");
++            cstmt.setString(3, "12345");
++
++            cstmt.execute();
++            int result = cstmt.getInt(1);
++            System.out.println(result);
++            cstmt.close();
++            String message = switch (result) {
++                case 0 -> "로그인 성공";
++                case 1 -> "로그인 실패";
++                default -> "아이디를 찾을 수 없음";
++            };
++            System.out.println(message);
++
++        } catch (Exception e) {
++            e.printStackTrace();
++        } finally {
++            if(conn != null) {
++                try {
++                    conn.close();
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
+Index: src/database/Create_Function.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Create_Function.java b/src/database/Create_Function.java
+new file mode 100644
+--- /dev/null	(date 1729739353646)
++++ b/src/database/Create_Function.java	(date 1729739353646)
+@@ -0,0 +1,72 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.sql.Statement;
++
++public class Create_Function {
++    public static void main(String[] args) {
++        Connection conn = null;
++
++        try {
++            // JDBC Driver 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 데이터베이스 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++
++            // CREATE TABLE SQL 문
++            String sql ="" + "CREATE OR REPLACE FUNCTION user_login (" +
++                    "a_user_id user.user_id%TYPE, " +
++                    "a_user_pw user.user_pw%TYPE" +
++                    ") " +
++                    "RETURN PLS_INTEGER " +
++                    "IS " +
++                    "v_user_pw user.user_pw%TYPE; " +
++                    "v_result PLS_INTEGER; " +
++                    "BEGIN " +
++                    "SELECT user_pw INTO v_user_pw " +
++                    "FROM users " +
++                    "WHERE user_id = a_user_id; " +
++                    "IF v_user_pw = a_user_pw THEN " +
++                    "RETURN 0; " +
++                    "ELSE RETURN 1; " +
++                    "END IF;" +
++                    "EXCEPTION WHEN NO_DATA_FOUND THEN RETURN 2;" +
++                    "COMMIT;" +
++                    "END;";
++
++
++
++            // Statement 객체 생성
++            Statement stmt = conn.createStatement();
++
++            // SQL 문 실행
++            stmt.executeUpdate(sql);
++            System.out.println("Function'이 성공적으로 생성되었습니다.");
++
++            // 자원 해제
++            stmt.close();
++
++        } catch (ClassNotFoundException e) {
++            e.printStackTrace();
++        } catch (SQLException e) {
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {
++                    e.printStackTrace();
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/database/Create_Transaction.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Create_Transaction.java b/src/database/Create_Transaction.java
+new file mode 100644
+--- /dev/null	(date 1729741198698)
++++ b/src/database/Create_Transaction.java	(date 1729741198698)
+@@ -0,0 +1,64 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.PreparedStatement;
++import java.sql.SQLException;
++
++public class Create_Transaction {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521/xe",
++                    "system",
++                    "oracle"
++            );
++            //트렌젝션 시작 --------------------------------
++            //자동커밋 꺼주기
++            conn.setAutoCommit(false);
++
++            //출금 작업
++            String sql1 = "UPDATE accounts SET balance=balance-? " +
++                    "WHERE ano=?";
++            PreparedStatement pstsmt1 = conn.prepareStatement(sql1);
++            pstsmt1.setInt(1, 10000);
++            pstsmt1.setString(2, "111-111-1111");
++            int rows1 = pstsmt1.executeUpdate();
++            if (rows1 == 0) throw new Exception("출금되지 않았음");
++            pstsmt1.close();
++
++            //입금 작업
++            String sql2 = "UPDATE accounts SET balance=balance+?" +
++                    "WHERE ano=?";
++            PreparedStatement pstsmt2 = conn.prepareStatement(sql2);
++            pstsmt2.setInt(1, 10000);
++            pstsmt2.setString(2, "222-222-2222");
++            int rows2 = pstsmt2.executeUpdate();
++            if (rows2 == 0) throw new Exception("입금되지 않았음");
++            pstsmt2.close();
++
++            //수동 커밋 => 모두 성공 처리
++            conn.commit();
++            System.out.println("계좌 이체 성공");
++            //트렌젝션 종료 --------------------------------
++        }catch(Exception e){
++                try {
++                    //수동 롤백 => 모두 실패 처리
++                    conn.rollback();
++                } catch (SQLException e1) {}
++                System.out.println("계좌 이체 실패");
++                e.printStackTrace();
++            } finally {
++                if(conn != null) {
++                    try {
++                        //원래대로 자동 커밋 켜주기
++                        conn.setAutoCommit(true);
++                        conn.close();
++                    } catch (SQLException e) {}
++                }
++            }
++        }
++    }
+Index: src/test/Reservation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\nimport java.io.*;\r\nimport java.util.HashMap;\r\nimport java.util.Scanner;\r\n\r\npublic class Reservation {\r\n    public void RsMovie(Movie mv) throws IOException {\r\n        mv.Mvlist();\r\n        System.out.print(\"예매하실 영화를 선택해주세요: \");\r\n        Scanner scanner = new Scanner(System.in);\r\n        int mvNum = scanner.nextInt();\r\n\r\n        String[] names = mv.getMovieNames();\r\n        if (mvNum > 0 && mvNum <= names.length) {\r\n            int rsNum = randNum();\r\n            System.out.println(names[mvNum - 1] + \" 을 예매하셨습니다.\");\r\n            System.out.println(\"[ 발급번호: \" + rsNum + \" ] 입니다.\");\r\n            System.out.println(\"즐거운 관람 되십시오.\");\r\n            saveRsNum(names[mvNum], rsNum);\r\n        } else {\r\n            System.out.println(\"영화를 잘못 선택하셨습니다.\");\r\n        }\r\n    }\r\n\r\n    private int randNum() {\r\n        return (int) ((Math.random() * 1000000) + 1000);\r\n    }\r\n\r\n    private void saveRsNum(String name, int num) throws IOException {\r\n        HashMap<String, Integer> mvmap = new HashMap<String, Integer>();\r\n        try (BufferedWriter writer = new BufferedWriter(new FileWriter(\"C:/gwangmin/mvrsnum.txt\", true))) {\r\n            writer.write(name + \"\\t\" + num + \"\\n\");\r\n        }\r\n    }\r\n\r\n    public void cancelRs() throws IOException {\r\n        System.out.print(\"발급번호를 입력하세요: \");\r\n        Scanner scanner = new Scanner(System.in);\r\n        int rsNum = scanner.nextInt();\r\n\r\n        File mvrsFile = new File(\"C:/gwangmin/mvrsnum.txt\");\r\n        File tempFile = new File(\"C:/gwangmin/temp.txt\");\r\n\r\n        try (BufferedReader reader = new BufferedReader(new FileReader(mvrsFile));\r\n             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {\r\n            String line;\r\n            boolean found = false;\r\n\r\n            while ((line = reader.readLine()) != null) {\r\n                String[] parts = line.split(\"\\t\");\r\n                if (parts.length > 1) {\r\n                    int inputNum = Integer.parseInt(parts[1]);\r\n                    if (inputNum == rsNum) {\r\n                        found = true;\r\n                        continue;\r\n                    }\r\n                }\r\n                writer.write(line + \"\\n\");\r\n            }\r\n\r\n            if (found) {\r\n                mvrsFile.delete();\r\n                tempFile.renameTo(mvrsFile);\r\n                System.out.println(\"예매 취소가 정상적으로 처리되었습니다.\");\r\n            } else {\r\n                System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n            }\r\n        }\r\n    }\r\n\r\n    public void checkRs() throws IOException {\r\n\r\n        Scanner scanner = new Scanner(System.in);\r\n        int rsNum = scanner.nextInt();\r\n        System.out.print(\"발급 번호를 입력하세요: \");\r\n\r\n        File mvrsFile = new File(\"C:/gwangmin/temp.txt\");\r\n        try (BufferedReader br = new BufferedReader(new FileReader(mvrsFile))) {\r\n\r\n            String line;\r\n            String mvName = \"\";\r\n            boolean found = false;\r\n\r\n            while ((line = br.readLine()) != null) {\r\n                String parts[] = line.split(\"\\t\");\r\n                if (parts.length > 1) {\r\n                    try {\r\n                        int inputNum = Integer.parseInt(parts[1]);\r\n                        if (inputNum == rsNum) {\r\n                            found = true;\r\n                            mvName = parts[0];\r\n                            break;\r\n\r\n                        }\r\n                    } catch (NumberFormatException e) {\r\n                        System.out.println(\"발급번호 못찾음\");\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n            }\r\n            if (found) {\r\n                System.out.println(\"예매하신 영화는 \" + mvName + \"입니다.\");\r\n\r\n            } else {\r\n                System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n                System.out.println(\"다시 확인하여 주세요.\");\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/Reservation.java b/src/test/Reservation.java
+--- a/src/test/Reservation.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/Reservation.java	(date 1729580718141)
+@@ -1,111 +1,0 @@
+-package test;
+-
+-import java.io.*;
+-import java.util.HashMap;
+-import java.util.Scanner;
+-
+-public class Reservation {
+-    public void RsMovie(Movie mv) throws IOException {
+-        mv.Mvlist();
+-        System.out.print("예매하실 영화를 선택해주세요: ");
+-        Scanner scanner = new Scanner(System.in);
+-        int mvNum = scanner.nextInt();
+-
+-        String[] names = mv.getMovieNames();
+-        if (mvNum > 0 && mvNum <= names.length) {
+-            int rsNum = randNum();
+-            System.out.println(names[mvNum - 1] + " 을 예매하셨습니다.");
+-            System.out.println("[ 발급번호: " + rsNum + " ] 입니다.");
+-            System.out.println("즐거운 관람 되십시오.");
+-            saveRsNum(names[mvNum], rsNum);
+-        } else {
+-            System.out.println("영화를 잘못 선택하셨습니다.");
+-        }
+-    }
+-
+-    private int randNum() {
+-        return (int) ((Math.random() * 1000000) + 1000);
+-    }
+-
+-    private void saveRsNum(String name, int num) throws IOException {
+-        HashMap<String, Integer> mvmap = new HashMap<String, Integer>();
+-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:/gwangmin/mvrsnum.txt", true))) {
+-            writer.write(name + "\t" + num + "\n");
+-        }
+-    }
+-
+-    public void cancelRs() throws IOException {
+-        System.out.print("발급번호를 입력하세요: ");
+-        Scanner scanner = new Scanner(System.in);
+-        int rsNum = scanner.nextInt();
+-
+-        File mvrsFile = new File("C:/gwangmin/mvrsnum.txt");
+-        File tempFile = new File("C:/gwangmin/temp.txt");
+-
+-        try (BufferedReader reader = new BufferedReader(new FileReader(mvrsFile));
+-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+-            String line;
+-            boolean found = false;
+-
+-            while ((line = reader.readLine()) != null) {
+-                String[] parts = line.split("\t");
+-                if (parts.length > 1) {
+-                    int inputNum = Integer.parseInt(parts[1]);
+-                    if (inputNum == rsNum) {
+-                        found = true;
+-                        continue;
+-                    }
+-                }
+-                writer.write(line + "\n");
+-            }
+-
+-            if (found) {
+-                mvrsFile.delete();
+-                tempFile.renameTo(mvrsFile);
+-                System.out.println("예매 취소가 정상적으로 처리되었습니다.");
+-            } else {
+-                System.out.println("입력하신 발급번호가 정확하지 않습니다.");
+-            }
+-        }
+-    }
+-
+-    public void checkRs() throws IOException {
+-
+-        Scanner scanner = new Scanner(System.in);
+-        int rsNum = scanner.nextInt();
+-        System.out.print("발급 번호를 입력하세요: ");
+-
+-        File mvrsFile = new File("C:/gwangmin/temp.txt");
+-        try (BufferedReader br = new BufferedReader(new FileReader(mvrsFile))) {
+-
+-            String line;
+-            String mvName = "";
+-            boolean found = false;
+-
+-            while ((line = br.readLine()) != null) {
+-                String parts[] = line.split("\t");
+-                if (parts.length > 1) {
+-                    try {
+-                        int inputNum = Integer.parseInt(parts[1]);
+-                        if (inputNum == rsNum) {
+-                            found = true;
+-                            mvName = parts[0];
+-                            break;
+-
+-                        }
+-                    } catch (NumberFormatException e) {
+-                        System.out.println("발급번호 못찾음");
+-                        e.printStackTrace();
+-                    }
+-                }
+-            }
+-            if (found) {
+-                System.out.println("예매하신 영화는 " + mvName + "입니다.");
+-
+-            } else {
+-                System.out.println("입력하신 발급번호가 정확하지 않습니다.");
+-                System.out.println("다시 확인하여 주세요.");
+-            }
+-        }
+-    }
+-}
+\ No newline at end of file
+Index: src/test/Menu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\npublic interface Menu {\r\n    void display();\r\n    void processInput(int choice);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/Menu.java b/src/test/Menu.java
+--- a/src/test/Menu.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/Menu.java	(date 1729580713578)
+@@ -1,6 +1,0 @@
+-package test;
+-
+-public interface Menu {
+-    void display();
+-    void processInput(int choice);
+-}
+Index: src/test/MainApp.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\npublic class MainApp {\r\n    public static void main(String[] args) throws Exception {\r\n        MainMenu mainMenu = new MainMenu();\r\n        mainMenu.display();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/MainApp.java b/src/test/MainApp.java
+--- a/src/test/MainApp.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/MainApp.java	(date 1729580709741)
+@@ -1,8 +1,0 @@
+-package test;
+-
+-public class MainApp {
+-    public static void main(String[] args) throws Exception {
+-        MainMenu mainMenu = new MainMenu();
+-        mainMenu.display();
+-    }
+-}
+Index: src/test/MainMenu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\nimport java.io.IOException;\r\n\r\npublic class MainMenu extends AbstractMenu {\r\n    private Reservation reservation = new Reservation();\r\n    private Movie movie;\r\n\r\n    public MainMenu() throws IOException {\r\n        try {\r\n            movie = new Movie();\r\n        } catch (IOException e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void display() {\r\n        while (true) {\r\n            try {\r\n                System.out.println(\"-----------광민 극장-----------\");\r\n                System.out.println(\"     1. 영화 예매\");\r\n                System.out.println(\"     2. 예매 취소\");\r\n                System.out.println(\"     3. 예매 확인\");\r\n                System.out.println(\"     4. 관리자 설정\");\r\n                System.out.println(\"     0. 종료\");\r\n                System.out.print(\"메뉴 번호를 입력해주세요: \");\r\n\r\n                int choice = scanner.nextInt();\r\n                processInput(choice);\r\n            } catch (Exception e) {\r\n                System.out.println(\"알 수 없는 오류가 발생했습니다: \" + e.getMessage());\r\n            }\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void processInput(int choice) {\r\n        try {\r\n            switch (choice) {\r\n                case 1:\r\n                    reservation.RsMovie(movie);\r\n                    break;\r\n                case 2:\r\n                    reservation.cancelReservation();\r\n                    break;\r\n                case 3:\r\n                    reservation.checkReservation();\r\n                    break;\r\n                case 4:\r\n                    System.out.println(\"관리자 기능은 현재 개발중입니다.\");\r\n                    break;\r\n                case 0:\r\n                    System.out.println(\"프로그램을 종료합니다.\");\r\n                    System.exit(0);\r\n                    break;\r\n                default:\r\n                    System.out.println(\"잘못된 선택입니다.\");\r\n                    break;\r\n            }\r\n        } catch (IOException e) {\r\n            System.out.println(\"입출력 오류가 발생했습니다: \" + e.getMessage());\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/MainMenu.java b/src/test/MainMenu.java
+--- a/src/test/MainMenu.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/MainMenu.java	(date 1729580705426)
+@@ -1,65 +1,0 @@
+-package test;
+-
+-import java.io.IOException;
+-
+-public class MainMenu extends AbstractMenu {
+-    private Reservation reservation = new Reservation();
+-    private Movie movie;
+-
+-    public MainMenu() throws IOException {
+-        try {
+-            movie = new Movie();
+-        } catch (IOException e) {
+-            throw new RuntimeException(e);
+-        }
+-    }
+-
+-    @Override
+-    public void display() {
+-        while (true) {
+-            try {
+-                System.out.println("-----------광민 극장-----------");
+-                System.out.println("     1. 영화 예매");
+-                System.out.println("     2. 예매 취소");
+-                System.out.println("     3. 예매 확인");
+-                System.out.println("     4. 관리자 설정");
+-                System.out.println("     0. 종료");
+-                System.out.print("메뉴 번호를 입력해주세요: ");
+-
+-                int choice = scanner.nextInt();
+-                processInput(choice);
+-            } catch (Exception e) {
+-                System.out.println("알 수 없는 오류가 발생했습니다: " + e.getMessage());
+-            }
+-        }
+-    }
+-
+-    @Override
+-    public void processInput(int choice) {
+-        try {
+-            switch (choice) {
+-                case 1:
+-                    reservation.RsMovie(movie);
+-                    break;
+-                case 2:
+-                    reservation.cancelReservation();
+-                    break;
+-                case 3:
+-                    reservation.checkReservation();
+-                    break;
+-                case 4:
+-                    System.out.println("관리자 기능은 현재 개발중입니다.");
+-                    break;
+-                case 0:
+-                    System.out.println("프로그램을 종료합니다.");
+-                    System.exit(0);
+-                    break;
+-                default:
+-                    System.out.println("잘못된 선택입니다.");
+-                    break;
+-            }
+-        } catch (IOException e) {
+-            System.out.println("입출력 오류가 발생했습니다: " + e.getMessage());
+-        }
+-    }
+-}
+Index: src/test/AbstractMenu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\nimport java.util.Scanner;\r\n\r\npublic abstract class AbstractMenu implements Menu {\r\n    protected Scanner scanner = new Scanner(System.in);\r\n    public void display() {\r\n        // 메뉴를 표시하는 기본적인 로직\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/AbstractMenu.java b/src/test/AbstractMenu.java
+--- a/src/test/AbstractMenu.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/AbstractMenu.java	(date 1729580708238)
+@@ -1,11 +1,0 @@
+-package test;
+-
+-import java.util.Scanner;
+-
+-public abstract class AbstractMenu implements Menu {
+-    protected Scanner scanner = new Scanner(System.in);
+-    public void display() {
+-        // 메뉴를 표시하는 기본적인 로직
+-    }
+-
+-}
+Index: src/report/Movie.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package report;\r\n\r\nimport java.io.*;\r\nimport java.util.HashMap;\r\nimport java.util.Scanner;\r\nimport java.io.FileReader;\r\n\r\n\r\npublic class Movie {\r\n    public static void main(String[] args) throws Exception {\r\n        Scanner s = new Scanner(System.in);\r\n\r\n        rogin();\r\n\r\n        while (true) {\r\n            System.out.println(\"프로그램이 시작됩니다.\");\r\n            System.out.println(\"-----------광민 극장-----------\");\r\n            System.out.println(\"     1. 영화 예매\");\r\n            System.out.println(\"     2. 예매 취소\");\r\n            System.out.println(\"     3. 예매 확인\");\r\n            System.out.println(\"     4. 관리자 설정\");\r\n            System.out.println(\"-----------광민 극장-----------\");\r\n            System.out.print(\"이용하시려는 메뉴 번호를 입력해주세요 : \");\r\n            System.out.println();\r\n            System.out.println(\"-----------------------------------\");\r\n\r\n            int click = s.nextInt();\r\n            s.nextLine();\r\n\r\n            switch (click) {\r\n                case 1:\r\n                   RsMovie();\r\n                    break;\r\n                case 2:\r\n                   Cancel();\r\n                    break;\r\n                case 3:\r\n                    Check();\r\n                    break;\r\n                case 4:\r\n                    System.out.println(\"관리자 기능은 현재 개발중입니다.\");\r\n                    System.out.println();\r\n                    break;\r\n                case 0:\r\n                    System.out.println(\"프로그램을 종료합니다.\");\r\n                    System.out.println();\r\n                    s.close();\r\n                    return;\r\n            }\r\n        }\r\n    }\r\n    private static void rogin() {\r\n        Scanner s = new Scanner(System.in);\r\n        System.out.println(\"회원가입을 해주세요\");\r\n        System.out.println(\"아이디를 입력해주세요 : \");\r\n        String id = s.nextLine();\r\n        System.out.println(\"비밀번호를 입력해주세요 : \");\r\n        String pw = s.nextLine();\r\n        try (BufferedWriter wt = new BufferedWriter(new FileWriter(\"C:/gwangmin/id_pw.txt\", true))) {\r\n            wt.write(id + \"\\t\" + pw);\r\n            wt.newLine();\r\n        } catch (IOException e) {\r\n            System.out.println(\"회원가입이 정상적으로 처리되지 않았습니다.\");\r\n            e.printStackTrace();\r\n        }\r\n        System.out.println(\"회원가입이 완료되었습니다.\");\r\n        }\r\n\r\n    private static boolean checkUser() throws Exception{\r\n        Scanner s = new Scanner(System.in);\r\n        File UserData = new File(\"C:/gwangmin/id_pw.txt\");\r\n\r\n        System.out.println(\"아이디를 입력하세요 : \");\r\n        String id = s.nextLine();\r\n        System.out.println(\"비밀번호를 입력하세요 : \");\r\n        String pw = s.nextLine();\r\n        try (BufferedReader br = new BufferedReader(new FileReader(UserData))) {\r\n            String line;\r\n            while ((line = br.readLine()) != null) {\r\n                String[] parts = line.split(\"\\t\");\r\n                if (parts[0].equals(id) && parts[1].equals(pw)) {\r\n                    System.out.println(\"로그인 성공\");\r\n                    return true;\r\n                }\r\n            }\r\n            System.out.println(\"로그인 실패\");\r\n        } catch (NumberFormatException e) {\r\n                        e.printStackTrace();\r\n        }\r\n        return false;\r\n    }\r\n\r\n    private static void RsMovie() throws Exception {\r\n        checkUser();\r\n        if (checkUser() == true) {\r\n            Scanner s = new Scanner(System.in);\r\n\r\n            File mv_nameFile = new File(\"C:/gwangmin/mvname.txt\");\r\n            int line = 0;\r\n            try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {\r\n                while (rd.readLine() != null) {\r\n                    line++;\r\n                }\r\n            }\r\n            String names[] = new String[line];\r\n\r\n            try (BufferedReader rd = new BufferedReader(new FileReader(mv_nameFile))) {\r\n                for (int i = 0; i < line; i++) {\r\n                    names[i] = rd.readLine();\r\n                }\r\n                System.out.println(\"---영화 목록---\");\r\n                for (int i = 0; i < names.length; i++) {\r\n                    System.out.println(names[i]);\r\n                }\r\n                System.out.println(\"---영화 목록---\");\r\n\r\n                System.out.print(\"예매하실 영화를 선택해주세요 : \");\r\n                Scanner s1 = new Scanner(System.in);\r\n                int mvNum = s1.nextInt();\r\n                if (mvNum > 0 && mvNum <= names.length) {\r\n                    String mvname = names[mvNum - 1];\r\n                    int Rsnum = RandomNum();\r\n                    System.out.println(mvname + \" 을 예매 하셨습니다.\");\r\n                    System.out.println(\"[ 발급번호 : \" + Rsnum + \" ] 입니다.\");\r\n                    System.out.println(\"즐거운 관람 되십시오.\");\r\n                    SaveMvNum(names[mvNum], Rsnum);\r\n                } else {\r\n                    System.out.println(\"영화를 잘못 선택 하셨습니다.\");\r\n                }\r\n            }\r\n        } else return;\r\n    }\r\n    private static int RandomNum () {\r\n        return (int) ((Math.random() * 1000000) + 1000);\r\n    }\r\n\r\n    private static void SaveMvNum (String name, int num) throws IOException {\r\n        try (BufferedWriter wt = new BufferedWriter(new FileWriter(\"C:/gwangmin/mvrsnum.txt\", true))) {\r\n            wt.write(name + \"\\t\");\r\n            wt.write(num + \"\\n\");\r\n        }\r\n    }\r\n\r\n    private static void Cancel() throws IOException {\r\n        Scanner s = new Scanner(System.in);\r\n        System.out.print(\"발급번호를 입력하세요 : \");\r\n        int RsNum = s.nextInt();\r\n\r\n        File mvrsFile = new File(\"C:/gwangmin/mvrsnum.txt\");\r\n        File tempFile = new File(\"C:/gwangmin/temp.txt\");\r\n\r\n        try (BufferedReader rd = new BufferedReader(new FileReader(mvrsFile));\r\n             BufferedWriter wt = new BufferedWriter(new FileWriter(tempFile))) {\r\n\r\n            String line;\r\n            boolean found = false;\r\n\r\n            while ((line = rd.readLine()) != null) {\r\n                String[] parts = line.split(\"\\t\");\r\n                if (parts.length > 1) {\r\n                    try{\r\n                        int inputnum = Integer.parseInt(parts[1]);\r\n                        if (inputnum == RsNum) {\r\n                            found = true;\r\n                            continue;\r\n                        }\r\n                    } catch (NumberFormatException e){\r\n                        System.out.println(\"발급번호 못찾음\");\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n                wt.write(line);\r\n                wt.write(\"\\n\");\r\n            }\r\n            if (found) {\r\n                mvrsFile.delete();\r\n                tempFile.renameTo(mvrsFile);\r\n                System.out.println(\"예매 취소가 정상적으로 처리되었습니다.\");\r\n            } else {\r\n                System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n                System.out.println(\"다시 확인하여 주세요.\");\r\n            }\r\n\r\n        }\r\n    }\r\n\r\n    private static void Check () throws Exception {\r\n\r\n        Scanner s = new Scanner(System.in);\r\n        System.out.println(\"발급 번호를 입력하세요 : \");\r\n        int RsNum = s.nextInt();\r\n\r\n\r\n        try (BufferedReader br = new BufferedReader(new FileReader(\"C:/gwangmin/mvrsnum.txt\"))) {\r\n            String line;\r\n            String mvname = \"\";\r\n            boolean found = false;\r\n\r\n            while ((line = br.readLine()) != null) {\r\n                String[] parts = line.split(\"\\t\");\r\n                if (parts.length > 1) {\r\n                    try {\r\n                        int inputnum = Integer.parseInt(parts[1]);\r\n                        if (inputnum == RsNum) {\r\n                            found = true;\r\n                            mvname = parts[0];\r\n                            break;\r\n                        }\r\n                    } catch (NumberFormatException e) {\r\n                        System.out.println(\"발급번호 못찾음\");\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n            }\r\n            if(found) {\r\n                System.out.println(\"예매하신 영화는 \" + mvname + \"입니다\");\r\n            } else {\r\n                System.out.println(\"입력하신 발급번호가 정확하지 않습니다.\");\r\n                System.out.println(\"다시 확인하여 주세요.\");\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/report/Movie.java b/src/report/Movie.java
+--- a/src/report/Movie.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/report/Movie.java	(date 1729584994859)
+@@ -1,7 +1,6 @@
+ package report;
+ 
+ import java.io.*;
+-import java.util.HashMap;
+ import java.util.Scanner;
+ import java.io.FileReader;
+ 
+@@ -49,6 +48,7 @@
+             }
+         }
+     }
++
+     private static void rogin() {
+         Scanner s = new Scanner(System.in);
+         System.out.println("회원가입을 해주세요");
+@@ -130,6 +130,7 @@
+             }
+         } else return;
+     }
++
+     private static int RandomNum () {
+         return (int) ((Math.random() * 1000000) + 1000);
+     }
+Index: src/test/Movie.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\r\n\r\nimport java.io.*;\r\n\r\n    public class Movie {\r\n        private String[] movieNames;\r\n\r\n        public Movie() throws IOException {\r\n            loadMovies();\r\n        }\r\n\r\n        private void loadMovies() throws IOException {\r\n            File mvNameFile = new File(\"C:/gwangmin/mvname.txt\");\r\n            BufferedReader reader = new BufferedReader(new FileReader(mvNameFile));\r\n            movieNames = reader.lines().toArray(String[]::new);\r\n            reader.close();\r\n        }\r\n\r\n        public String[] getMovieNames() {\r\n            return movieNames;\r\n        }\r\n\r\n        public void Mvlist() {\r\n            System.out.println(\"영화 목록:\");\r\n            for (int i = 0; i < movieNames.length; i++) {\r\n                System.out.println((i + 1) + \". \" + movieNames[i]);\r\n            }\r\n        }\r\n    }\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/Movie.java b/src/test/Movie.java
+--- a/src/test/Movie.java	(revision fdd6ffb4c6eba185043458ae7faaee60863ef292)
++++ b/src/test/Movie.java	(date 1729580715864)
+@@ -1,29 +1,0 @@
+-package test;
+-
+-import java.io.*;
+-
+-    public class Movie {
+-        private String[] movieNames;
+-
+-        public Movie() throws IOException {
+-            loadMovies();
+-        }
+-
+-        private void loadMovies() throws IOException {
+-            File mvNameFile = new File("C:/gwangmin/mvname.txt");
+-            BufferedReader reader = new BufferedReader(new FileReader(mvNameFile));
+-            movieNames = reader.lines().toArray(String[]::new);
+-            reader.close();
+-        }
+-
+-        public String[] getMovieNames() {
+-            return movieNames;
+-        }
+-
+-        public void Mvlist() {
+-            System.out.println("영화 목록:");
+-            for (int i = 0; i < movieNames.length; i++) {
+-                System.out.println((i + 1) + ". " + movieNames[i]);
+-            }
+-        }
+-    }
+Index: src/database/Connection_OracleDB.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/database/Connection_OracleDB.java b/src/database/Connection_OracleDB.java
+new file mode 100644
+--- /dev/null	(date 1729645484826)
++++ b/src/database/Connection_OracleDB.java	(date 1729645484826)
+@@ -0,0 +1,41 @@
++package database;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++
++// oracle jdbc driver 다운 후 외부 라이브러리에 저장해야 함
++// oracle 은 포트번호 1521
++
++
++public class Connection_OracleDB {
++    public static void main(String[] args) {
++        Connection conn = null;
++        try {
++            // JDBC Driver 를 등록
++            Class.forName("oracle.jdbc.OracleDriver");
++
++            // 연결
++            conn = DriverManager.getConnection(
++                    "jdbc:oracle:thin:@localhost:1521:xe",
++                    "system",
++                    "oracle"
++            );
++            System.out.println("연결 성공");
++        } catch (ClassNotFoundException e) {
++            System.out.println("클래스 못찾음");
++            e.printStackTrace();
++        } catch (SQLException e) {
++            System.out.println("SQL Exception 발생");
++            e.printStackTrace();
++        } finally {
++            if (conn != null) {
++                try {
++                    // 연결 끊기 (자원낭비)
++                    conn.close();
++                    System.out.println("연결 끊기");
++                } catch (SQLException e) {}
++            }
++        }
++    }
++}
