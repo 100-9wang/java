@@ -9,7 +9,7 @@ public class Movie {
     public static void main(String[] args) throws Exception {
         Scanner s = new Scanner(System.in);
 
-        rogin();
+        signin();
 
         while (true) {
             System.out.println("프로그램이 시작됩니다.");
@@ -49,7 +49,7 @@ public class Movie {
         }
     }
 
-    private static void rogin() {
+    private static void signin() {
         Scanner s = new Scanner(System.in);
         System.out.println("회원가입을 해주세요");
         System.out.println("아이디를 입력해주세요 : ");
@@ -66,7 +66,7 @@ public class Movie {
         System.out.println("회원가입이 완료되었습니다.");
         }
 
-    private static boolean checkUser() throws Exception{
+    private static boolean login() throws Exception{
         Scanner s = new Scanner(System.in);
         File UserData = new File("C:/gwangmin/id_pw.txt");
 
@@ -91,8 +91,8 @@ public class Movie {
     }
 
     private static void RsMovie() throws Exception {
-        checkUser();
-        if (checkUser() == true) {
+        login();
+        if (login() == true) {
             Scanner s = new Scanner(System.in);
 
             File mv_nameFile = new File("C:/gwangmin/mvname.txt");
